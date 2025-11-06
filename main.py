@@ -3,10 +3,14 @@ from sqlalchemy import create_engine, String, select
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, sessionmaker
 from typing import Annotated
 from pydantic import BaseModel, Field
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = FastAPI()
 
-engine = create_engine("postgresql+psycopg2://pp04user:pp04password@localhost:5432/pp04DB", echo=True)
+engine = create_engine(os.environ("db_url"), echo=True)
 
 class Base(DeclarativeBase):
     pass
