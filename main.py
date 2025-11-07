@@ -10,7 +10,7 @@ load_dotenv()
 
 app = FastAPI()
 
-engine = create_engine(os.environ("db_url"), echo=True)
+engine = create_engine(os.getenv("db_url"), echo=True)
 
 class Base(DeclarativeBase):
     pass
@@ -42,7 +42,7 @@ class UserSchema(UserAddSchema):
 def on_startup():
     create_db_and_tables()
 
-@app.post("/books")
+@app.post("/users")
 def add_user(data: UserAddSchema, session: SessionDep):
     user = User(
         name=data.name
@@ -51,20 +51,20 @@ def add_user(data: UserAddSchema, session: SessionDep):
     session.commit()
     return {"status": True}
 
-@app.get("/books")
+@app.get("/users")
 def get_users(session: SessionDep):
     query = select(User)
     result = session.execute(query)
     return result.scalars().all()
 
-@app.get("/books/{user_id}/")
+@app.get("/users/{user_id}/")
 def get_user(user_id: int, session: SessionDep):
     user = session.get(User, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@app.delete("/books/{user_id}")
+@app.delete("/users/{user_id}")
 def delete_user(user_id: int, session: SessionDep):
     user = session.get(User, user_id)
     if not user:
